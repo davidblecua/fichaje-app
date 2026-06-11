@@ -1,0 +1,147 @@
+/* ExportButton.module.css */
+
+.wrap {
+  display: inline-block;
+}
+
+.botones {
+  display: flex;
+  gap: 2px;
+}
+
+.btnExportar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 6px 0 0 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.btnExportar:hover:not(:disabled) {
+  background: #047857;
+}
+
+.btnExportar:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btnOpciones {
+  padding: 10px 12px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background 0.15s;
+}
+
+.btnOpciones:hover:not(:disabled) {
+  background: #047857;
+}
+
+.btnOpciones:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.icono {
+  font-size: 1rem;
+}
+
+/* ─── Panel de opciones ──────────────────────────────────────────── */
+
+.opciones {
+  margin-top: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  min-width: 300px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.opcionesTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 12px;
+}
+
+.campos {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.campo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.input {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.input:focus {
+  outline: none;
+  border-color: #059669;
+}
+
+.btnExportarRango {
+  width: 100%;
+  padding: 9px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnExportarRango:hover:not(:disabled) {
+  background: #047857;
+}
+
+/* ─── Spinner verde para estado de carga ─────────────────────────── */
+
+.spinnerVerde {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: girar 0.6s linear infinite;
+}
+
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}

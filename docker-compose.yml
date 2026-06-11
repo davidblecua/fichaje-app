@@ -1,0 +1,59 @@
+services:
+
+  # ─── Backend FastAPI ─────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fichaje-backend
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      # Volumen para SQLite y Excel — accesible desde fuera del contenedor
+      - ./data:/app/data
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////app/data/fichajes.db}
+      EXCEL_PATH: ${EXCEL_PATH:-/app/data/fichajes.xlsx}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      TZ: ${TZ:-Europe/Madrid}
+      APP_TIMEZONE: ${TZ:-Europe/Madrid}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - fichaje-net
+
+  # ─── Frontend React (producción con Nginx) ───────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # URL del backend accesible desde el NAVEGADOR del usuario
+        # En local: http://localhost:8001
+        # En TrueNAS o servidor: http://<IP-del-servidor>:8001
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8001}
+        VITE_TIMEZONE: ${TZ:-Europe/Madrid}
+    container_name: fichaje-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - fichaje-net
+
+networks:
+  fichaje-net:
+    driver: bridge

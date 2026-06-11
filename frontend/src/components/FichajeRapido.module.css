@@ -1,0 +1,175 @@
+/* FichajeRapido.module.css */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+/* ─── Estado badge ───────────────────────────────────────────────── */
+
+.estadoBadge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.activo {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.inactivo {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activo .dot {
+  background: #10b981;
+  box-shadow: 0 0 0 3px #a7f3d0;
+  animation: pulso 2s infinite;
+}
+
+.inactivo .dot {
+  background: #9ca3af;
+}
+
+@keyframes pulso {
+  0%, 100% { box-shadow: 0 0 0 3px #a7f3d0; }
+  50% { box-shadow: 0 0 0 6px #d1fae5; }
+}
+
+.estadoTexto {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Proyecto activo ────────────────────────────────────────────── */
+
+.proyectoActivo {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: -8px 0 16px 0;
+  padding-left: 4px;
+}
+
+.proyectoLabel {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pausaBadge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* ─── Botones ────────────────────────────────────────────────────── */
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btnPrincipal {
+  flex: 1;
+  min-width: 160px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btnEntrada {
+  background: var(--accent);
+  color: white;
+}
+
+.btnEntrada:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btnSalida {
+  background: #ef4444;
+  color: white;
+}
+
+.btnSalida:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btnPrincipal:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnDetalle {
+  padding: 14px 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btnDetalle:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.btnDetalle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Spinner ────────────────────────────────────────────────────── */
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: girar 0.6s linear infinite;
+}
+
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}

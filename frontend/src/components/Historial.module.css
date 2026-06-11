@@ -1,0 +1,351 @@
+/* Historial.module.css */
+
+.seccion {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.total {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.registros {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ─── Filtros ────────────────────────────────────────────────────── */
+
+.filtros {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filtroGrupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 130px;
+}
+
+.filtroLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filtroInput {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color 0.15s;
+}
+
+.filtroInput:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.btnLimpiar {
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  align-self: flex-end;
+  transition: all 0.15s;
+}
+
+.btnLimpiar:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+/* ─── Tabla ──────────────────────────────────────────────────────── */
+
+.tablaWrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.tabla thead th {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabla tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+.tabla tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tabla tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+.tabla td {
+  padding: 10px 12px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+/* ─── Filas especiales ───────────────────────────────────────────── */
+
+.filaPausa {
+  background: #fffbeb !important;
+}
+
+.filaAbierta {
+  background: #eff6ff !important;
+}
+
+.filaFacturado td:first-child {
+  border-left: 3px solid #10b981;
+}
+
+.filaEdicion {
+  background: #f8fafc !important;
+}
+
+/* ─── Celdas ─────────────────────────────────────────────────────── */
+
+.celdaHoras {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.celdaProyecto {
+  font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.celdaTarea {
+  max-width: 200px;
+  color: var(--text-muted);
+}
+
+.enCurso {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* ─── Fila total ─────────────────────────────────────────────────── */
+
+.filaTotal {
+  background: var(--surface-hover) !important;
+}
+
+.filaTotal td {
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  border-top: 2px solid var(--border);
+}
+
+/* ─── Inputs de edición inline ───────────────────────────────────── */
+
+.inputEdicion {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  font-size: 0.83rem;
+  background: white;
+  box-sizing: border-box;
+}
+
+/* ─── Botones de acción por fila ─────────────────────────────────── */
+
+.acciones {
+  display: flex;
+  gap: 4px;
+}
+
+.btnEditar,
+.btnEliminar,
+.btnGuardar,
+.btnCancelarEdit {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnEditar {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.btnEditar:hover {
+  background: #dbeafe;
+  color: var(--accent);
+}
+
+.btnEliminar {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.btnEliminar:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.btnGuardar {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.btnGuardar:hover {
+  background: #a7f3d0;
+}
+
+.btnCancelarEdit {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* ─── Estados vacío / cargando ───────────────────────────────────── */
+
+.cargando,
+.vacio {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ─── Modal de confirmación ──────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 28px 32px;
+  max-width: 380px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal p {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.modalBotones {
+  display: flex;
+  gap: 10px;
+}
+
+.btnEliminarConfirm {
+  flex: 1;
+  padding: 10px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnEliminarConfirm:hover {
+  background: #dc2626;
+}
+
+.btnCancelarModal {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnCancelarModal:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
