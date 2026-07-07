@@ -1,6 +1,6 @@
 /**
  * Componente de historial: tabla de registros con filtros y totales.
- * Permite editar campos inline y eliminar registros.
+ * El botón "Editar" abre el modal de edición (sin edición inline).
  */
 
 import { useState } from "react";
@@ -44,7 +44,7 @@ export default function Historial({
   clientes,
   onFiltrar,
   onLimpiarFiltros,
-  onEditar,
+  onAbrirEdicion,   // NEW: reemplaza onEditar — abre el modal con el fichaje
   onEliminar,
 }) {
   const [confirmEliminar, setConfirmEliminar] = useState(null); // ID a eliminar
@@ -192,9 +192,7 @@ export default function Historial({
                 <FilaFichaje
                   key={f.id}
                   fichaje={f}
-                  proyectos={proyectos}
-                  clientes={clientes}
-                  onEditar={onEditar}
+                  onAbrirEdicion={onAbrirEdicion}  // NEW
                   onEliminar={handleEliminarClick}
                 />
               ))}
@@ -241,85 +239,9 @@ export default function Historial({
 }
 
 /**
- * Fila individual del historial con edición inline.
+ * Fila individual del historial. El botón Editar abre el modal en el padre.
  */
-function FilaFichaje({ fichaje, proyectos, clientes, onEditar, onEliminar }) {
-  const [editando, setEditando] = useState(false);
-  const [form, setForm] = useState({
-    proyecto: fichaje.proyecto || "",
-    cliente: fichaje.cliente || "",
-    tarea: fichaje.tarea || "",
-    facturado: fichaje.facturado,
-    notas: fichaje.notas || "",
-  });
-
-  const handleGuardar = () => {
-    onEditar(fichaje.id, {
-      proyecto: form.proyecto || null,
-      cliente: form.cliente || null,
-      tarea: form.tarea || null,
-      facturado: form.facturado,
-      notas: form.notas || null,
-    });
-    setEditando(false);
-  };
-
-  if (editando) {
-    return (
-      <tr className={styles.filaEdicion}>
-        <td>{formatFecha(fichaje.entrada)}</td>
-        <td>{formatHora(fichaje.entrada)}</td>
-        <td>{formatHora(fichaje.salida)}</td>
-        <td>{formatHoras(fichaje.horas)}</td>
-        <td>
-          <input
-            type="text"
-            value={form.proyecto}
-            onChange={(e) => setForm({ ...form, proyecto: e.target.value })}
-            className={styles.inputEdicion}
-            list="proyectos-list"
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            value={form.cliente}
-            onChange={(e) => setForm({ ...form, cliente: e.target.value })}
-            className={styles.inputEdicion}
-            list="clientes-list"
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            value={form.tarea}
-            onChange={(e) => setForm({ ...form, tarea: e.target.value })}
-            className={styles.inputEdicion}
-          />
-        </td>
-        <td>{fichaje.tipo === "pausa" ? "Sí" : "No"}</td>
-        <td>
-          <input
-            type="checkbox"
-            checked={form.facturado}
-            onChange={(e) => setForm({ ...form, facturado: e.target.checked })}
-          />
-        </td>
-        <td>
-          <button className={styles.btnGuardar} onClick={handleGuardar}>
-            ✓
-          </button>
-          <button
-            className={styles.btnCancelarEdit}
-            onClick={() => setEditando(false)}
-          >
-            ✕
-          </button>
-        </td>
-      </tr>
-    );
-  }
-
+function FilaFichaje({ fichaje, onAbrirEdicion, onEliminar }) {  // NEW: sin edición inline
   const esPausa = fichaje.tipo === "pausa";
   const esAbierto = !fichaje.salida;
 
@@ -354,7 +276,7 @@ function FilaFichaje({ fichaje, proyectos, clientes, onEditar, onEliminar }) {
         <div className={styles.acciones}>
           <button
             className={styles.btnEditar}
-            onClick={() => setEditando(true)}
+            onClick={() => onAbrirEdicion(fichaje)}  // NEW: abre el modal con el fichaje
             title="Editar"
           >
             ✎

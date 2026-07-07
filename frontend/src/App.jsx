@@ -5,6 +5,7 @@ import Historial from "./components/Historial";
 import ExportButton from "./components/ExportButton";
 import GestionClientes from "./components/GestionClientes";
 import ImportarFichajes from "./components/ImportarFichajes";
+import FichajeModal from "./components/FichajeModal";   // NEW
 import styles from "./App.module.css";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
     ficharSalida,
     actualizarFichaje,
     borrarFichaje,
+    crearFichajeManual,   // NEW
     exportar,
     aplicarFiltros,
     limpiarFiltros,
@@ -32,6 +34,40 @@ export default function App() {
 
   const [mostrarClientes, setMostrarClientes] = useState(false);
   const [mostrarImportar, setMostrarImportar] = useState(false);
+  const [modalAbierto, setModalAbierto] = useState(false);       // NEW
+  const [fichajeEditando, setFichajeEditando] = useState(null);  // NEW
+
+  // NEW: Abre el modal en modo edición con el fichaje seleccionado
+  const handleAbrirEdicion = (fichaje) => {
+    setFichajeEditando(fichaje);
+    setModalAbierto(true);
+  };
+
+  // NEW: Abre el modal en modo creación (sin fichaje)
+  const handleAbrirCrear = () => {
+    setFichajeEditando(null);
+    setModalAbierto(true);
+  };
+
+  // NEW: Cierra el modal y limpia el estado
+  const handleCerrarModal = () => {
+    setModalAbierto(false);
+    setFichajeEditando(null);
+  };
+
+  // NEW: Guarda los datos del modal (crea o edita según si hay fichajeEditando)
+  const handleGuardarModal = async (datos) => {
+    try {
+      if (fichajeEditando) {
+        await actualizarFichaje(fichajeEditando.id, datos);
+      } else {
+        await crearFichajeManual(datos);
+      }
+      handleCerrarModal();
+    } catch {
+      // El error ya se muestra mediante mostrarError en el hook
+    }
+  };
 
   return (
     <div className={styles.app}>
@@ -43,6 +79,14 @@ export default function App() {
             <span className={styles.logoTexto}>Fichaje</span>
           </div>
           <div className={styles.headerAcciones}>
+            {/* NEW: botón para abrir el modal de creación manual */}
+            <button
+              className={styles.btnHeaderSecundario}
+              onClick={handleAbrirCrear}
+              title="Añadir un fichaje manualmente"
+            >
+              + Añadir fichaje
+            </button>
             <button
               className={styles.btnHeaderSecundario}
               onClick={() => setMostrarImportar(true)}
@@ -96,7 +140,7 @@ export default function App() {
           clientes={clientes}
           onFiltrar={aplicarFiltros}
           onLimpiarFiltros={limpiarFiltros}
-          onEditar={actualizarFichaje}
+          onAbrirEdicion={handleAbrirEdicion}  // NEW: reemplaza onEditar
           onEliminar={borrarFichaje}
         />
       </main>
@@ -119,6 +163,15 @@ export default function App() {
           onImportado={() => { cargarHistorial(); recargarClientes?.(); }}
         />
       )}
+      {/* NEW: modal de creación y edición de fichajes */}
+      <FichajeModal
+        abierto={modalAbierto}
+        fichaje={fichajeEditando}
+        proyectos={proyectos}
+        clientes={clientes}
+        onGuardar={handleGuardarModal}
+        onCerrar={handleCerrarModal}
+      />
     </div>
   );
 }

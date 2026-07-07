@@ -14,7 +14,8 @@ import {
   eliminarFichaje,
   getProyectos,
   getClientes,
-  exportarExcel,
+  downloadExcel,
+  crearFichaje,       // NEW
 } from "../api/client";
 
 export function useFichaje() {
@@ -141,6 +142,7 @@ export function useFichaje() {
       mostrarExito("Fichaje actualizado.");
     } catch (e) {
       mostrarError(e.message);
+      throw e; // NEW: re-throw para que el modal no se cierre en caso de error
     } finally {
       setCargando(false);
     }
@@ -159,15 +161,64 @@ export function useFichaje() {
     }
   }, [cargarHistorial, mostrarError, mostrarExito]);
 
+  // NEW: Crear fichaje manualmente
+  const crearFichajeManual = useCallback(async (datos) => {
+    setCargando(true);
+    try {
+      await crearFichaje(datos);
+      await cargarHistorial();
+      await cargarProyectos();
+      await cargarClientes();
+      mostrarExito("Fichaje creado correctamente.");
+    } catch (e) {
+      mostrarError(e.message);
+      throw e; // NEW: re-throw para que el modal no se cierre en caso de error
+    } finally {
+      setCargando(false);
+    }
+  }, [cargarHistorial, cargarProyectos, cargarClientes, mostrarError, mostrarExito]);
+
   // ─── Exportar Excel ───────────────────────────────────────────────────
 
   const exportar = useCallback(async (filtrosExport = {}) => {
     setCargando(true);
     try {
-      const resultado = await exportarExcel(filtrosExport);
-      mostrarExito(`Excel generado: ${resultado.hojas_generadas.join(", ")}`);
+      const response = await downloadExcel(filtrosExport);
+      const blob = await response.blob();
+
+      const fecha = new Date().toISOString().slice(0, 10);
+      const nombreArchivo = `fichajes_${fecha}.xlsx`;
+
+      if ("showSaveFilePicker" in window) {
+        // API moderna: diálogo nativo del SO para elegir dónde guardar
+        const handle = await window.showSaveFilePicker({
+          suggestedName: nombreArchivo,
+          types: [{
+            description: "Excel",
+            accept: { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"] },
+          }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } else {
+        // Fallback: descarga a la carpeta de descargas del navegador
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = nombreArchivo;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      mostrarExito("Excel descargado correctamente.");
     } catch (e) {
-      mostrarError(e.message);
+      // AbortError = usuario canceló el diálogo de guardar, no es un error
+      if (e.name !== "AbortError") {
+        mostrarError(e.message);
+      }
     } finally {
       setCargando(false);
     }
@@ -219,6 +270,7 @@ export function useFichaje() {
     ficharSalida,
     actualizarFichaje,
     borrarFichaje,
+    crearFichajeManual,   // NEW
     exportar,
     aplicarFiltros,
     limpiarFiltros,

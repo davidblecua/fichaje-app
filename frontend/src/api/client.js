@@ -108,6 +108,18 @@ export async function eliminarFichaje(id) {
   });
 }
 
+// NEW: Crea un fichaje manualmente con todos los campos
+/**
+ * Crea un fichaje manualmente sin depender del flujo entrada/salida en tiempo real.
+ * @param {Object} datos - { entrada, salida?, proyecto?, cliente?, tarea?, tipo, facturado, notas? }
+ */
+export async function crearFichaje(datos) {
+  return request("/fichajes", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
 // ─── Proyectos ─────────────────────────────────────────────────────────────
 
 /** Obtiene la lista de proyectos únicos para autocompletado. */
@@ -156,7 +168,7 @@ export async function importarFichajes(fichajes) {
 // ─── Exportar ──────────────────────────────────────────────────────────────
 
 /**
- * Solicita al backend que genere/actualice el fichero Excel.
+ * Solicita al backend que genere/actualice el fichero Excel (guarda en servidor).
  * @param {Object} filtros - { fecha_inicio?, fecha_fin? }
  */
 export async function exportarExcel(filtros = {}) {
@@ -168,4 +180,27 @@ export async function exportarExcel(filtros = {}) {
   return request(`/export/excel${query}`, {
     method: "POST",
   });
+}
+
+/**
+ * Descarga el Excel directamente desde el backend como blob binario.
+ * Usar con showSaveFilePicker() o <a download> para que el usuario elija dónde guardarlo.
+ * @param {Object} filtros - { fecha_inicio?, fecha_fin? }
+ * @returns {Promise<Response>} Respuesta raw con el binario del .xlsx
+ */
+export async function downloadExcel(filtros = {}) {
+  const params = new URLSearchParams();
+  if (filtros.fecha_inicio) params.append("fecha_inicio", filtros.fecha_inicio);
+  if (filtros.fecha_fin) params.append("fecha_fin", filtros.fecha_fin);
+
+  const query = params.toString() ? `?${params.toString()}` : "";
+  const url = `${BASE_URL}/export/excel/download${query}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data?.detail || `Error ${response.status}`);
+  }
+
+  return response;
 }

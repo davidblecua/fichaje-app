@@ -15,6 +15,7 @@ from models import ClienteDB, Fichaje
 from schemas import (
     ClientesResponse,
     EstadoActual,
+    FichajeCreate,         # NEW
     FichajeEntradaCreate,
     FichajeResponse,
     FichajeSalidaCreate,
@@ -148,6 +149,35 @@ def registrar_salida(datos: FichajeSalidaCreate, db: Session = Depends(get_db)):
     return abierto
 
 
+# NEW: Crear fichaje manualmente con todos los campos
+@router.post("", response_model=FichajeResponse, status_code=201)
+def crear_fichaje_manual(datos: FichajeCreate, db: Session = Depends(get_db)):
+    """
+    Crea un fichaje manualmente con todos los campos.
+    No depende del flujo entrada/salida en tiempo real.
+    Recalcula horas automáticamente si se proporcionan entrada y salida.
+    """
+    horas = _calcular_horas(datos.entrada, datos.salida) if datos.salida else None
+
+    nuevo = Fichaje(
+        entrada=datos.entrada,
+        salida=datos.salida,
+        horas=horas,
+        proyecto=datos.proyecto,
+        cliente=datos.cliente,
+        tarea=datos.tarea,
+        tipo=datos.tipo,
+        facturado=datos.facturado,
+        notas=datos.notas,
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+
+    logger.info("Fichaje manual creado: id=%d entrada=%s", nuevo.id, nuevo.entrada)
+    return nuevo
+
+
 @router.get("", response_model=ListaFichajes)
 def listar_fichajes(
     fecha_inicio: Optional[date] = Query(None, description="Fecha de inicio del filtro (YYYY-MM-DD)"),
@@ -212,6 +242,7 @@ def editar_fichaje(
     """
     Edita parcialmente un registro de fichaje existente.
     Recalcula las horas si se modifican entrada o salida.
+    Rechaza con 422 si la salida resultante es anterior o igual a la entrada.
     """
     fichaje = db.query(Fichaje).filter(Fichaje.id == fichaje_id).first()
     if not fichaje:
@@ -221,6 +252,13 @@ def editar_fichaje(
     campos = datos.model_dump(exclude_none=True)
     for campo, valor in campos.items():
         setattr(fichaje, campo, valor)
+
+    # NEW: validar salida > entrada antes de confirmar cambios
+    if fichaje.salida is not None and fichaje.salida <= fichaje.entrada:
+        raise HTTPException(
+            status_code=422,
+            detail="La hora de salida debe ser posterior a la de entrada.",
+        )
 
     # Recalcular horas si se han modificado los timestamps y ambos existen
     if ("entrada" in campos or "salida" in campos) and fichaje.salida:

@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator  # NEW: model_validator
 
 
 def _tz() -> ZoneInfo:
@@ -85,6 +85,49 @@ class FichajeUpdate(BaseModel):
         if v is not None and v not in ("normal", "pausa"):
             raise ValueError("tipo debe ser 'normal' o 'pausa'")
         return v
+
+    # NEW: normalizar datetimes aware → naive local
+    @field_validator("entrada", "salida")
+    @classmethod
+    def normalizar_dt(cls, v: Optional[datetime]) -> Optional[datetime]:
+        if v is None:
+            return v
+        return to_naive_local(v)
+
+
+# NEW: Schema para crear un fichaje manualmente con todos los campos
+class FichajeCreate(BaseModel):
+    """Datos para crear un fichaje manualmente (sin flujo entrada/salida en tiempo real)."""
+    entrada: datetime                       # Obligatoria
+    salida: Optional[datetime] = None
+    proyecto: Optional[str] = None
+    cliente: Optional[str] = None
+    tarea: Optional[str] = None
+    tipo: str = "normal"
+    facturado: bool = False
+    notas: Optional[str] = None
+
+    @field_validator("tipo")
+    @classmethod
+    def tipo_valido(cls, v: str) -> str:
+        if v not in ("normal", "pausa"):
+            raise ValueError("tipo debe ser 'normal' o 'pausa'")
+        return v
+
+    # NEW: normalizar datetimes aware → naive local en ambos campos
+    @field_validator("entrada", "salida")
+    @classmethod
+    def normalizar_dt(cls, v: Optional[datetime]) -> Optional[datetime]:
+        if v is None:
+            return v
+        return to_naive_local(v)
+
+    # NEW: validar que salida > entrada si ambas presentes
+    @model_validator(mode="after")
+    def salida_posterior_a_entrada(self) -> "FichajeCreate":
+        if self.salida is not None and self.salida <= self.entrada:
+            raise ValueError("La hora de salida debe ser posterior a la de entrada")
+        return self
 
 
 # ─── Schemas de salida (response) ───────────────────────────────────────────
