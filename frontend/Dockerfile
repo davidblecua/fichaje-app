@@ -4,10 +4,11 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Instalar dependencias (separado para aprovechar caché de Docker)
-# npm ci falla aquí por un bug de npm con optionalDependencies de Rollup
-# cuando el lockfile se generó en otro SO (https://github.com/npm/cli/issues/4828)
+# El package-lock.json se generó en Windows y no registra el binario nativo
+# de Rollup para linux-musl, así que se borra para forzar una resolución
+# fresca dentro del contenedor (npm/cli#4828)
 COPY package*.json ./
-RUN npm install
+RUN rm -f package-lock.json && npm install
 
 # Copiar fuentes y construir la app
 COPY . .
